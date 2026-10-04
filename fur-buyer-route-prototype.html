@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fur Buyer Routes — Interactive Prototype</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #141a12; color: #f2ede1; min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 28px 16px 48px;
+  }
+  .page-title { text-align: center; }
+  .page-title h1 { font-size: 22px; font-weight: 700; }
+  .page-title p { font-size: 13px; color: #b9b29c; margin-top: 6px; max-width: 440px; line-height: 1.5; }
+  .concept-badge {
+    display: inline-block; margin-top: 10px; font-size: 11px; font-weight: 700;
+    letter-spacing: 1.5px; color: #141a12; background: #e8a33d;
+    padding: 4px 12px; border-radius: 20px;
+  }
+  .phone {
+    width: 390px; max-width: 94vw; height: 810px;
+    background: #f5f0e3; border-radius: 48px; margin-top: 24px;
+    border: 10px solid #0c0f0a;
+    box-shadow: 0 24px 80px rgba(0,0,0,.6), 0 0 0 2px #3a3f35;
+    overflow: hidden; position: relative; display: flex; flex-direction: column;
+    color: #2b2b26;
+  }
+  .notch {
+    position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+    width: 120px; height: 28px; background: #0c0f0a; border-radius: 16px; z-index: 30;
+  }
+  .app-header {
+    background: #2e3d24; color: #f2ede1; padding: 52px 18px 12px;
+    display: flex; align-items: center; gap: 10px; flex: none;
+  }
+  .app-header .paw {
+    width: 34px; height: 34px; background: #e8a33d; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 800; color: #2e3d24; flex: none;
+  }
+  .app-header .name { font-size: 19px; font-weight: 800; }
+  .app-header .sub { font-size: 11px; color: #cfc8ae; }
+  .screen { display: none; flex: 1; flex-direction: column; overflow: hidden; }
+  .screen.active { display: flex; }
+  .screen-title { padding: 14px 18px 4px; }
+  .screen-title h2 { font-size: 21px; font-weight: 800; }
+  .screen-title p { font-size: 12.5px; color: #6d6a5c; margin-top: 3px; }
+  .scroll { flex: 1; overflow-y: auto; padding: 10px 18px 16px; }
+  /* MAP */
+  .map-wrap { background: #e7dfc6; border: 1.5px solid #d8cfae; border-radius: 16px; overflow: hidden; position: relative; }
+  .map-wrap svg { display: block; width: 100%; height: auto; }
+  .layer-bar { display: flex; gap: 8px; margin: 10px 0 4px; flex-wrap: wrap; }
+  .chip {
+    font-size: 12.5px; font-weight: 700; padding: 8px 14px; border-radius: 20px;
+    background: #e9e2cd; color: #6d6a5c; border: 1.5px solid #d8cfae; cursor: pointer;
+  }
+  .chip.on { background: #2e3d24; color: #f2ede1; border-color: #2e3d24; }
+  .chip.sponsor { border-color: #e8a33d; }
+  .chip.sponsor.on { background: #7a5b1e; border-color: #7a5b1e; color: #fff; }
+  .pin-card {
+    display: none; margin-top: 10px; background: #fffdf6; border: 1.5px solid #d8cfae;
+    border-radius: 14px; padding: 12px 14px;
+  }
+  .pin-card.show { display: block; }
+  .pin-card .t { font-weight: 800; font-size: 15px; }
+  .pin-card .d { font-size: 13px; color: #6d6a5c; margin-top: 3px; line-height: 1.45; }
+  .pin-card .sponsored { font-size: 10.5px; font-weight: 700; letter-spacing: 1px; color: #7a5b1e; margin-bottom: 4px; }
+  .row { display: flex; gap: 8px; margin-top: 10px; }
+  .btn { flex: 1; border: none; border-radius: 12px; padding: 11px 0; font-size: 14px; font-weight: 700; cursor: pointer; }
+  .btn.primary { background: #2e3d24; color: #f2ede1; }
+  .btn.accent { background: #e8a33d; color: #2e3d24; }
+  .btn.ghost { background: #e9e2cd; color: #3a3a33; }
+  .btn.on { background: #4c7a3f; color: #fff; }
+  .route-pin { cursor: pointer; }
+  .route-pin circle { fill: #7a5b1e; stroke: #fffdf6; stroke-width: 2.5; }
+  .route-pin text { fill: #fff; font-size: 10px; font-weight: 800; text-anchor: middle; }
+  .trap-pin circle { fill: #4c7a3f; stroke: #fffdf6; stroke-width: 2; }
+  /* SEASONS */
+  .season-row {
+    display: flex; align-items: center; gap: 10px; background: #fffdf6;
+    border: 1.5px solid #d8cfae; border-radius: 12px; padding: 10px 12px; margin-bottom: 8px;
+  }
+  .season-row .dot { width: 12px; height: 12px; border-radius: 50%; flex: none; }
+  .season-row .dot.open { background: #4c7a3f; } .season-row .dot.closed { background: #b04a3a; }
+  .season-row .nm { font-weight: 700; font-size: 14px; }
+  .season-row .dt { font-size: 12px; color: #6d6a5c; }
+  .season-row .st { margin-left: auto; font-size: 11px; font-weight: 700; }
+  .section-head { font-size: 13px; font-weight: 800; letter-spacing: .6px; color: #7a5b1e; margin: 16px 0 8px; text-transform: uppercase; }
+  .sched-row {
+    display: flex; align-items: center; gap: 12px; background: #fffdf6;
+    border: 1.5px solid #d8cfae; border-radius: 14px; padding: 11px 13px; margin-bottom: 9px;
+  }
+  .sched-row .date { flex: none; width: 52px; text-align: center; background: #7a5b1e; color: #fff; border-radius: 10px; padding: 7px 0; }
+  .sched-row .date .mo { font-size: 10px; font-weight: 700; letter-spacing: 1px; }
+  .sched-row .date .dy { font-size: 19px; font-weight: 800; }
+  .sched-row .info .town { font-weight: 700; font-size: 14.5px; }
+  .sched-row .info .meta { font-size: 12px; color: #6d6a5c; margin-top: 2px; }
+  .bell { margin-left: auto; flex: none; width: 40px; height: 40px; border-radius: 50%; border: none; background: #e9e2cd; font-size: 18px; cursor: pointer; }
+  .bell.on { background: #4c7a3f; }
+  /* TOTALS */
+  .total-row {
+    display: flex; align-items: center; background: #fffdf6; border: 1.5px solid #d8cfae;
+    border-radius: 12px; padding: 10px 14px; margin-bottom: 8px;
+  }
+  .total-row .sp { font-weight: 700; font-size: 14.5px; }
+  .total-row .ct { margin-left: auto; font-size: 20px; font-weight: 800; color: #2e3d24; }
+  .sell-card {
+    margin-top: 14px; background: #2e3d24; color: #f2ede1; border-radius: 16px; padding: 16px;
+  }
+  .sell-card .sponsored { font-size: 10.5px; font-weight: 700; letter-spacing: 1px; color: #e8a33d; margin-bottom: 6px; }
+  .sell-card h3 { font-size: 17px; }
+  .sell-card p { font-size: 13px; color: #cfc8ae; margin-top: 5px; line-height: 1.5; }
+  .sell-card .row { display: flex; gap: 8px; margin-top: 12px; }
+  .sell-card .btn.primary { background: #e8a33d; color: #2e3d24; }
+  .sell-card .btn.ghost { background: rgba(255,255,255,.14); color: #f2ede1; }
+  .note {
+    margin-top: 12px; font-size: 12px; color: #6d6a5c; background: #eef3e4;
+    border: 1px solid #cfd8b8; padding: 10px 12px; border-radius: 12px; line-height: 1.45;
+  }
+  .tabbar { display: flex; border-top: 1px solid #d8cfae; background: #fffdf6; padding: 8px 2px 24px; flex: none; }
+  .tabbar button {
+    flex: 1; border: none; background: none; font-size: 9px; color: #8a8778; font-weight: 600; cursor: pointer; padding: 0;
+  }
+  .tabbar button .i { font-size: 18px; display: block; margin-bottom: 2px; }
+  .tabbar button.here { color: #2e3d24; }
+  .toast {
+    position: absolute; bottom: 96px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: #2b2b26; color: #f2ede1; font-size: 12.5px; font-weight: 600;
+    padding: 9px 16px; border-radius: 20px; opacity: 0; transition: all .25s; pointer-events: none;
+    white-space: nowrap; z-index: 40;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .caption { text-align: center; color: #b9b29c; font-size: 12.5px; margin-top: 18px; max-width: 440px; line-height: 1.55; }
+  .caption b { color: #e8a33d; }
+</style>
+</head>
+<body>
+  <div class="page-title">
+    <h1>Fur Buyer Routes &mdash; Interactive Prototype</h1>
+    <p>Tap through it like the real app: the <b>Map</b> tab with a buyer-route pin layer, the <b>Seasons</b> tab with the route schedule, and <b>Totals</b> with the sell-your-fur card. All sample data is illustrative.</p>
+    <span class="concept-badge">CONCEPT PROTOTYPE</span>
+  </div>
+
+  <div class="phone">
+    <div class="notch"></div>
+    <div class="app-header">
+      <div class="paw">O</div>
+      <div><div class="name">Opossum Foot</div><div class="sub">Trap Set &middot; Catch Log</div></div>
+    </div>
+
+    <!-- MAP SCREEN -->
+    <div class="screen active" id="s-map">
+      <div class="screen-title"><h2>Map</h2><p>Prairie County &mdash; your sets and lines.</p></div>
+      <div class="scroll">
+        <div class="map-wrap">
+          <svg viewBox="0 0 354 330" id="appMap">
+            <rect width="354" height="330" fill="#e7dfc6"/>
+            <g stroke="#d3c8a4" stroke-width="1">
+              <path d="M0 82 H354 M0 164 H354 M0 246 H354"/>
+              <path d="M88 0 V330 M177 0 V330 M266 0 V330"/>
+            </g>
+            <path d="M-5 250 C 60 230, 120 260, 190 235 S 320 245, 360 220" stroke="#b9d2e8" stroke-width="8" fill="none" opacity="0.5"/>
+            <g class="trap-pin"><circle cx="120" cy="120" r="8"/><circle cx="205" cy="190" r="8"/><circle cx="90" cy="215" r="8"/><circle cx="250" cy="110" r="8"/></g>
+            <g id="routeLayer" style="display:none">
+              <path d="M290,60 L235,105 L215,160 L160,200 L105,235 L120,120 L180,70"
+                    fill="none" stroke="#7a5b1e" stroke-width="3" stroke-dasharray="8 6"
+                    stroke-linecap="round" stroke-linejoin="round"/>
+              <g class="route-pin" data-t="Rochester, MN" data-d="Sun Oct 18 &middot; 10am&ndash;2pm"><circle cx="290" cy="60" r="11"/><text x="290" y="64">1</text></g>
+              <g class="route-pin" data-t="Sioux Falls, SD" data-d="Sat Oct 17 &middot; 9am&ndash;1pm"><circle cx="235" cy="105" r="11"/><text x="235" y="109">2</text></g>
+              <g class="route-pin" data-t="Omaha, NE" data-d="Sun Oct 11 &middot; 4pm&ndash;7pm"><circle cx="215" cy="160" r="11"/><text x="215" y="164">3</text></g>
+              <g class="route-pin" data-t="Des Moines, IA" data-d="Sun Oct 11 &middot; 9am&ndash;2pm"><circle cx="160" cy="200" r="11"/><text x="160" y="204">4</text></g>
+              <g class="route-pin" data-t="Cedar Rapids, IA" data-d="Sat Oct 10 &middot; 3pm&ndash;6pm"><circle cx="105" cy="235" r="11"/><text x="105" y="239">5</text></g>
+              <g class="route-pin" data-t="Dubuque, IA" data-d="Sat Oct 10 &middot; 9am&ndash;1pm"><circle cx="120" cy="120" r="11"/><text x="120" y="124">6</text></g>
+            </g>
+            <text x="12" y="318" font-size="10" fill="#a09a82">Prairie County &mdash; illustrative</text>
+          </svg>
+        </div>
+        <div class="layer-bar">
+          <button class="chip on" id="chipSets">My sets</button>
+          <button class="chip sponsor" id="chipRoutes">&#9873; Buyer routes</button>
+        </div>
+        <div class="pin-card" id="pinCard">
+          <div class="sponsored">SPONSORED &middot; GROENEWOLD FUR &amp; WOOL</div>
+          <div class="t" id="pinTitle"></div>
+          <div class="d" id="pinDesc"></div>
+          <div class="row">
+            <button class="btn primary" id="pinRemind">Remind me</button>
+            <button class="btn ghost" id="pinClose">Close</button>
+          </div>
+        </div>
+        <div class="note">Toggle <b>Buyer routes</b> to overlay the sponsor's pickup stops on the map you already use. Tap any numbered pin for the date and time window.</div>
+      </div>
+    </div>
+
+    <!-- SEASONS SCREEN -->
+    <div class="screen" id="s-seasons">
+      <div class="screen-title"><h2>Seasons</h2><p>What's open, and who's buying.</p></div>
+      <div class="scroll">
+        <div class="season-row"><span class="dot open"></span><div><div class="nm">Raccoon</div><div class="dt">Nov 1 &ndash; Jan 31 &middot; illustrative</div></div><span class="st">OPEN</span></div>
+        <div class="season-row"><span class="dot open"></span><div><div class="nm">Coyote</div><div class="dt">Continuous open season &middot; illustrative</div></div><span class="st">OPEN</span></div>
+        <div class="season-row"><span class="dot closed"></span><div><div class="nm">Muskrat</div><div class="dt">Nov 1 &ndash; Jan 31 &middot; illustrative</div></div><span class="st">CLOSED</span></div>
+        <div class="section-head">&#9873; Fur buyer routes &mdash; Groenewold</div>
+        <div class="sched-row">
+          <div class="date"><div class="mo">OCT</div><div class="dy">10</div></div>
+          <div class="info"><div class="town">Dubuque, IA</div><div class="meta">Sat &middot; 9am&ndash;1pm</div></div>
+          <button class="bell">&#128276;</button>
+        </div>
+        <div class="sched-row">
+          <div class="date"><div class="mo">OCT</div><div class="dy">11</div></div>
+          <div class="info"><div class="town">Des Moines, IA</div><div class="meta">Sun &middot; 9am&ndash;2pm</div></div>
+          <button class="bell">&#128276;</button>
+        </div>
+        <div class="sched-row">
+          <div class="date"><div class="mo">OCT</div><div class="dy">17</div></div>
+          <div class="info"><div class="town">Sioux Falls, SD</div><div class="meta">Sat &middot; 9am&ndash;1pm</div></div>
+          <button class="bell">&#128276;</button>
+        </div>
+        <div class="sched-row">
+          <div class="date"><div class="mo">OCT</div><div class="dy">18</div></div>
+          <div class="info"><div class="town">Rochester, MN</div><div class="meta">Sun &middot; 10am&ndash;2pm</div></div>
+          <button class="bell">&#128276;</button>
+        </div>
+        <div class="note">Trappers checking season dates see the buyer's schedule right there. Tap a bell for a day-before reminder.</div>
+      </div>
+    </div>
+
+    <!-- TOTALS SCREEN -->
+    <div class="screen" id="s-totals">
+      <div class="screen-title"><h2>Totals</h2><p>Your season at a glance.</p></div>
+      <div class="scroll">
+        <div class="total-row"><div class="sp">Raccoon</div><div class="ct">14</div></div>
+        <div class="total-row"><div class="sp">Muskrat</div><div class="ct">9</div></div>
+        <div class="total-row"><div class="sp">Coyote</div><div class="ct">6</div></div>
+        <div class="total-row"><div class="sp">Opossum</div><div class="ct">5</div></div>
+        <div class="total-row"><div class="sp">Beaver</div><div class="ct">3</div></div>
+        <div class="sell-card">
+          <div class="sponsored">SPONSORED &middot; GROENEWOLD FUR &amp; WOOL</div>
+          <h3>Ready to sell your fur?</h3>
+          <p>Groenewold's truck is in <b>Des Moines, Oct 11</b> &mdash; 9am to 2pm. One tap to call, or get a reminder the day before.</p>
+          <div class="row">
+            <button class="btn primary" id="sellCall">Call now</button>
+            <button class="btn ghost" id="sellRemind">Remind me</button>
+          </div>
+        </div>
+        <div class="note">The moment a trapper tallies the season's catch is the moment they pick a buyer. The sponsor owns that moment.</div>
+      </div>
+    </div>
+
+    <div class="tabbar">
+      <button data-s="map" class="here"><span class="i">&#9678;</span>Map</button>
+      <button data-s="none"><span class="i">&#9776;</span>Lines</button>
+      <button data-s="none"><span class="i">&#9783;</span>History</button>
+      <button data-s="totals"><span class="i">&#9312;</span>Totals</button>
+      <button data-s="none"><span class="i">&#9782;</span>Scorecard</button>
+      <button data-s="seasons"><span class="i">&#9728;</span>Seasons</button>
+      <button data-s="none"><span class="i">&#9745;</span>Licenses</button>
+      <button data-s="none"><span class="i">&#9881;</span>Settings</button>
+    </div>
+    <div class="toast" id="toast"></div>
+  </div>
+
+  <p class="caption">Three placements, one sponsor: the route layer on <b>Map</b>, the schedule in <b>Seasons</b>, and the sell card in <b>Totals</b>. Play with it, then tell me where you'd put it &mdash; or if it earns its own tab after all.</p>
+
+<script>
+  var toast = document.getElementById('toast'), toastT;
+  function showToast(msg){
+    toast.textContent = msg; toast.classList.add('show');
+    clearTimeout(toastT); toastT = setTimeout(function(){ toast.classList.remove('show'); }, 1600);
+  }
+  document.querySelectorAll('.tabbar button').forEach(function(b){
+    b.addEventListener('click', function(){
+      if (b.dataset.s === 'none') { showToast('Not part of this demo'); return; }
+      document.querySelectorAll('.tabbar button').forEach(function(x){ x.classList.remove('here'); });
+      document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+      b.classList.add('here');
+      document.getElementById('s-' + b.dataset.s).classList.add('active');
+    });
+  });
+  var routesOn = false;
+  var layer = document.getElementById('routeLayer');
+  var chipR = document.getElementById('chipRoutes');
+  var card = document.getElementById('pinCard');
+  chipR.addEventListener('click', function(){
+    routesOn = !routesOn;
+    layer.style.display = routesOn ? 'block' : 'none';
+    chipR.classList.toggle('on', routesOn);
+    if (!routesOn) card.classList.remove('show');
+    showToast(routesOn ? 'Buyer route layer on' : 'Buyer route layer off');
+  });
+  document.getElementById('chipSets').addEventListener('click', function(){
+    this.classList.toggle('on');
+    showToast('Your set pins ' + (this.classList.contains('on') ? 'shown' : 'hidden'));
+  });
+  document.querySelectorAll('.route-pin').forEach(function(p){
+    p.addEventListener('click', function(){
+      document.getElementById('pinTitle').textContent = p.dataset.t;
+      document.getElementById('pinDesc').innerHTML = p.dataset.d + '<br>Groenewold Fur &amp; Wool &middot; tap Remind me for a day-before alert.';
+      card.classList.add('show');
+    });
+  });
+  document.getElementById('pinClose').addEventListener('click', function(){ card.classList.remove('show'); });
+  document.getElementById('pinRemind').addEventListener('click', function(){
+    this.classList.toggle('on'); this.textContent = this.classList.contains('on') ? 'Reminder set \u2713' : 'Remind me';
+  });
+  document.querySelectorAll('.bell').forEach(function(b){
+    b.addEventListener('click', function(){ b.classList.toggle('on'); });
+  });
+  document.getElementById('sellRemind').addEventListener('click', function(){
+    this.classList.toggle('on'); this.textContent = this.classList.contains('on') ? 'Reminder set \u2713' : 'Remind me';
+  });
+  document.getElementById('sellCall').addEventListener('click', function(){ showToast('Demo: would dial the buyer'); });
+</script>
+</body>
+</html>
