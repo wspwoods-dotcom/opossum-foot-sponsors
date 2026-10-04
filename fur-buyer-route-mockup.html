@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fur Buyer Routes — Concept Mockup</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #141a12;
+    color: #f2ede1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 28px 16px 48px;
+  }
+  .page-title { text-align: center; margin-bottom: 6px; }
+  .page-title h1 { font-size: 22px; font-weight: 700; letter-spacing: .3px; }
+  .page-title p { font-size: 13px; color: #b9b29c; margin-top: 6px; max-width: 420px; }
+  .concept-badge {
+    display: inline-block; margin-top: 10px; font-size: 11px; font-weight: 700;
+    letter-spacing: 1.5px; color: #141a12; background: #e8a33d;
+    padding: 4px 12px; border-radius: 20px;
+  }
+  .phone {
+    width: 390px; max-width: 94vw; height: 800px;
+    background: #f5f0e3; border-radius: 48px; margin-top: 24px;
+    border: 10px solid #0c0f0a;
+    box-shadow: 0 24px 80px rgba(0,0,0,.6), 0 0 0 2px #3a3f35;
+    overflow: hidden; position: relative; display: flex; flex-direction: column;
+    color: #2b2b26;
+  }
+  .notch {
+    position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+    width: 120px; height: 28px; background: #0c0f0a; border-radius: 16px; z-index: 5;
+  }
+  .app-header {
+    background: #2e3d24; color: #f2ede1; padding: 52px 18px 12px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .app-header .paw {
+    width: 34px; height: 34px; background: #e8a33d; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 800; color: #2e3d24; flex: none;
+  }
+  .app-header .name { font-size: 19px; font-weight: 800; letter-spacing: .3px; }
+  .app-header .sub { font-size: 11px; color: #cfc8ae; }
+  .screen-title { padding: 14px 18px 4px; }
+  .screen-title h2 { font-size: 21px; font-weight: 800; }
+  .screen-title p { font-size: 12.5px; color: #6d6a5c; margin-top: 3px; }
+  .sponsor-chip {
+    margin: 10px 18px 0; background: #fffdf6; border: 1.5px solid #d8cfae;
+    border-radius: 14px; padding: 10px 12px; display: flex; align-items: center; gap: 10px;
+  }
+  .sponsor-chip .logo {
+    width: 44px; height: 44px; border-radius: 10px; background: #2e3d24; color: #e8a33d;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 19px; flex: none;
+  }
+  .sponsor-chip .who { font-size: 14px; font-weight: 700; }
+  .sponsor-chip .what { font-size: 11.5px; color: #6d6a5c; }
+  .sponsor-chip .tag {
+    margin-left: auto; font-size: 10px; font-weight: 700; letter-spacing: .8px;
+    color: #7a5b1e; background: #f6e7c4; padding: 4px 8px; border-radius: 12px; flex: none;
+  }
+  .tabs { display: flex; gap: 8px; padding: 12px 18px 0; }
+  .tab {
+    flex: 1; text-align: center; font-size: 13.5px; font-weight: 700; padding: 9px 0;
+    border-radius: 12px; background: #e9e2cd; color: #6d6a5c; border: none; cursor: pointer;
+  }
+  .tab.active { background: #2e3d24; color: #f2ede1; }
+  .panel { display: none; padding: 12px 18px 0; flex: 1; overflow-y: auto; }
+  .panel.active { display: block; }
+  .map-wrap {
+    background: #efe8d2; border: 1.5px solid #d8cfae; border-radius: 16px;
+    overflow: hidden;
+  }
+  .map-wrap svg { display: block; width: 100%; height: auto; }
+  .stop-dot { cursor: pointer; }
+  .stop-dot circle.ring { fill: #fffdf6; stroke: #2e3d24; stroke-width: 2.5; }
+  .stop-dot.home circle.ring { fill: #e8a33d; stroke: #7a5b1e; }
+  .stop-dot text { font-size: 10.5px; font-weight: 700; fill: #3a3a33; }
+  .stop-dot .dt { font-size: 9.5px; font-weight: 600; fill: #7a5b1e; }
+  .stop-detail {
+    margin-top: 10px; background: #fffdf6; border: 1.5px solid #d8cfae;
+    border-radius: 14px; padding: 12px 14px; font-size: 13px;
+  }
+  .stop-detail .t { font-weight: 800; font-size: 15px; }
+  .stop-detail .d { color: #6d6a5c; margin-top: 2px; }
+  .stop-detail .row { display: flex; gap: 8px; margin-top: 10px; }
+  .btn {
+    flex: 1; border: none; border-radius: 12px; padding: 11px 0;
+    font-size: 14px; font-weight: 700; cursor: pointer;
+  }
+  .btn.primary { background: #2e3d24; color: #f2ede1; }
+  .btn.accent { background: #e8a33d; color: #2e3d24; }
+  .btn.ghost { background: #e9e2cd; color: #3a3a33; }
+  .btn.on { background: #4c7a3f; color: #fff; }
+  .sched-row {
+    display: flex; align-items: center; gap: 12px; background: #fffdf6;
+    border: 1.5px solid #d8cfae; border-radius: 14px; padding: 11px 13px; margin-bottom: 9px;
+  }
+  .sched-row .date {
+    flex: none; width: 52px; text-align: center; background: #2e3d24; color: #f2ede1;
+    border-radius: 10px; padding: 7px 0;
+  }
+  .sched-row .date .mo { font-size: 10px; font-weight: 700; letter-spacing: 1px; }
+  .sched-row .date .dy { font-size: 19px; font-weight: 800; }
+  .sched-row .info .town { font-weight: 700; font-size: 14.5px; }
+  .sched-row .info .meta { font-size: 12px; color: #6d6a5c; margin-top: 2px; }
+  .sched-row .bell {
+    margin-left: auto; flex: none; width: 40px; height: 40px; border-radius: 50%;
+    border: none; background: #e9e2cd; font-size: 18px; cursor: pointer;
+  }
+  .sched-row .bell.on { background: #4c7a3f; }
+  .contact-card {
+    background: #fffdf6; border: 1.5px solid #d8cfae; border-radius: 16px;
+    padding: 16px; text-align: center;
+  }
+  .contact-card .logo {
+    width: 64px; height: 64px; border-radius: 16px; background: #2e3d24; color: #e8a33d;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 28px; margin: 0 auto 10px;
+  }
+  .contact-card h3 { font-size: 18px; }
+  .contact-card p { font-size: 13px; color: #6d6a5c; margin-top: 4px; }
+  .contact-card .row { display: flex; gap: 8px; margin-top: 14px; }
+  .note {
+    margin: 12px 18px 0; font-size: 12px; color: #6d6a5c; background: #eef3e4;
+    border: 1px solid #cfd8b8; padding: 10px 12px; border-radius: 12px; line-height: 1.45;
+  }
+  .tabbar {
+    display: flex; border-top: 1px solid #d8cfae; background: #fffdf6;
+    padding: 8px 4px 22px; margin-top: auto;
+  }
+  .tabbar div { flex: 1; text-align: center; font-size: 10px; color: #8a8778; font-weight: 600; }
+  .tabbar div .i { font-size: 19px; display: block; margin-bottom: 2px; }
+  .tabbar div.here { color: #2e3d24; }
+  .caption { text-align: center; color: #b9b29c; font-size: 12.5px; margin-top: 18px; max-width: 430px; line-height: 1.5; }
+</style>
+</head>
+<body>
+  <div class="page-title">
+    <h1>Fur Buyer Routes</h1>
+    <p>A sponsored in-app feature: buyers publish their pickup routes, trappers see exactly when they're coming through town.</p>
+    <span class="concept-badge">CONCEPT MOCKUP</span>
+  </div>
+
+  <div class="phone">
+    <div class="notch"></div>
+    <div class="app-header">
+      <div class="paw">O</div>
+      <div>
+        <div class="name">Opossum Foot</div>
+        <div class="sub">Trap Set &middot; Catch Log</div>
+      </div>
+    </div>
+
+    <div class="screen-title">
+      <h2>Fur Buyer Routes</h2>
+      <p>When your buyer is coming through &mdash; dates, towns, and alerts.</p>
+    </div>
+
+    <div class="sponsor-chip">
+      <div class="logo">G</div>
+      <div>
+        <div class="who">Groenewold Fur &amp; Wool</div>
+        <div class="what">Forreston, Illinois &middot; buying fur across the Midwest</div>
+      </div>
+      <div class="tag">SPONSOR</div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" data-p="map">Route Map</button>
+      <button class="tab" data-p="sched">Schedule</button>
+      <button class="tab" data-p="contact">Contact</button>
+    </div>
+
+    <!-- MAP PANEL -->
+    <div class="panel active" id="p-map">
+      <div class="map-wrap">
+        <svg viewBox="0 0 390 400" role="img" aria-label="Illustrative fur buyer route map">
+          <defs>
+            <pattern id="grid" width="26" height="26" patternUnits="userSpaceOnUse">
+              <path d="M 26 0 L 0 0 0 26" fill="none" stroke="#ddd2b4" stroke-width="1"/>
+            </pattern>
+          </defs>
+          <rect width="390" height="400" fill="#efe8d2"/>
+          <rect width="390" height="400" fill="url(#grid)" opacity="0.55"/>
+          <path d="M -10 90 C 80 110, 150 70, 240 100 S 360 90, 410 120" stroke="#b9d2e8" stroke-width="7" fill="none" opacity="0.55"/>
+          <path d="M 60 410 C 90 320, 60 240, 110 170 S 150 60, 190 -10" stroke="#b9d2e8" stroke-width="5" fill="none" opacity="0.45"/>
+          <path d="M300,252 L252,202 L232,262 L182,302 L112,332 L122,182 L202,112"
+                fill="none" stroke="#2e3d24" stroke-width="3.5" stroke-dasharray="9 7"
+                stroke-linecap="round" stroke-linejoin="round"/>
+          <g class="stop-dot home" data-t="Forreston, IL" data-d="Home base &mdash; buying daily" data-w="Mon&ndash;Sat &middot; 8am&ndash;5pm">
+            <circle class="ring" cx="300" cy="252" r="11"/><text x="300" y="256" text-anchor="middle" font-size="12">&#9733;</text>
+            <text x="316" y="248">Forreston, IL</text><text class="dt" x="316" y="261">Home base</text>
+          </g>
+          <g class="stop-dot" data-t="Dubuque, IA" data-d="Saturday, October 10" data-w="9am &ndash; 1pm &middot; north end of town">
+            <circle class="ring" cx="252" cy="202" r="9"/><text x="252" y="206" text-anchor="middle" font-size="10">1</text>
+            <text x="266" y="198">Dubuque, IA</text><text class="dt" x="266" y="211">Oct 10</text>
+          </g>
+          <g class="stop-dot" data-t="Cedar Rapids, IA" data-d="Saturday, October 10" data-w="3pm &ndash; 6pm">
+            <circle class="ring" cx="232" cy="262" r="9"/><text x="232" y="266" text-anchor="middle" font-size="10">2</text>
+            <text x="140" y="266">Cedar Rapids, IA</text><text class="dt" x="140" y="279">Oct 10</text>
+          </g>
+          <g class="stop-dot" data-t="Des Moines, IA" data-d="Sunday, October 11" data-w="9am &ndash; 2pm">
+            <circle class="ring" cx="182" cy="302" r="9"/><text x="182" y="306" text-anchor="middle" font-size="10">3</text>
+            <text x="196" y="306">Des Moines, IA</text><text class="dt" x="196" y="319">Oct 11</text>
+          </g>
+          <g class="stop-dot" data-t="Omaha, NE" data-d="Sunday, October 11" data-w="4pm &ndash; 7pm">
+            <circle class="ring" cx="112" cy="332" r="9"/><text x="112" y="336" text-anchor="middle" font-size="10">4</text>
+            <text x="126" y="336">Omaha, NE</text><text class="dt" x="126" y="349">Oct 11</text>
+          </g>
+          <g class="stop-dot" data-t="Sioux Falls, SD" data-d="Saturday, October 17" data-w="9am &ndash; 1pm">
+            <circle class="ring" cx="122" cy="182" r="9"/><text x="122" y="186" text-anchor="middle" font-size="10">5</text>
+            <text x="136" y="186">Sioux Falls, SD</text><text class="dt" x="136" y="199">Oct 17</text>
+          </g>
+          <g class="stop-dot" data-t="Rochester, MN" data-d="Sunday, October 18" data-w="10am &ndash; 2pm">
+            <circle class="ring" cx="202" cy="112" r="9"/><text x="202" y="116" text-anchor="middle" font-size="10">6</text>
+            <text x="216" y="116">Rochester, MN</text><text class="dt" x="216" y="129">Oct 18</text>
+          </g>
+          <text x="14" y="386" font-size="10" fill="#a09a82">Illustrative route &mdash; dates shown are examples</text>
+        </svg>
+      </div>
+      <div class="stop-detail" id="stopDetail">
+        <div class="t">Tap any stop</div>
+        <div class="d">See the date, time window, and meeting spot for that town.</div>
+      </div>
+    </div>
+
+    <!-- SCHEDULE PANEL -->
+    <div class="panel" id="p-sched">
+      <div class="sched-row">
+        <div class="date"><div class="mo">OCT</div><div class="dy">10</div></div>
+        <div class="info"><div class="town">Dubuque, IA</div><div class="meta">Sat &middot; 9am&ndash;1pm</div></div>
+        <button class="bell" aria-label="Alert me">&#128276;</button>
+      </div>
+      <div class="sched-row">
+        <div class="date"><div class="mo">OCT</div><div class="dy">10</div></div>
+        <div class="info"><div class="town">Cedar Rapids, IA</div><div class="meta">Sat &middot; 3pm&ndash;6pm</div></div>
+        <button class="bell" aria-label="Alert me">&#128276;</button>
+      </div>
+      <div class="sched-row">
+        <div class="date"><div class="mo">OCT</div><div class="dy">11</div></div>
+        <div class="info"><div class="town">Des Moines, IA</div><div class="meta">Sun &middot; 9am&ndash;2pm</div></div>
+        <button class="bell" aria-label="Alert me">&#128276;</button>
+      </div>
+      <div class="sched-row">
+        <div class="date"><div class="mo">OCT</div><div class="dy">11</div></div>
+        <div class="info"><div class="town">Omaha, NE</div><div class="meta">Sun &middot; 4pm&ndash;7pm</div></div>
+        <button class="bell" aria-label="Alert me">&#128276;</button>
+      </div>
+      <div class="sched-row">
+        <div class="date"><div class="mo">OCT</div><div class="dy">17</div></div>
+        <div class="info"><div class="town">Sioux Falls, SD</div><div class="meta">Sat &middot; 9am&ndash;1pm</div></div>
+        <button class="bell" aria-label="Alert me">&#128276;</button>
+      </div>
+      <div class="sched-row">
+        <div class="date"><div class="mo">OCT</div><div class="dy">18</div></div>
+        <div class="info"><div class="town">Rochester, MN</div><div class="meta">Sun &middot; 10am&ndash;2pm</div></div>
+        <button class="bell" aria-label="Alert me">&#128276;</button>
+      </div>
+      <div class="note">Tap the bell on any stop and the app reminds you the day before the truck rolls into town. The buyer updates dates once &mdash; every trapper on the route sees it.</div>
+    </div>
+
+    <!-- CONTACT PANEL -->
+    <div class="panel" id="p-contact">
+      <div class="contact-card">
+        <div class="logo">G</div>
+        <h3>Groenewold Fur &amp; Wool</h3>
+        <p>Forreston, Illinois<br>Buying wild fur across the Midwest, nearly year-round.</p>
+        <div class="row">
+          <button class="btn primary">Call</button>
+          <button class="btn accent">Text</button>
+        </div>
+        <div class="row">
+          <button class="btn ghost" id="alertBtn">Get text alerts for this route</button>
+        </div>
+      </div>
+      <div class="note">One-tap call and text, plus optional alerts when the route changes. The buyer owns this card &mdash; their brand, their number, in front of every trapper checking the route.</div>
+    </div>
+
+    <div class="tabbar">
+      <div><span class="i">&#9678;</span>Map</div>
+      <div><span class="i">&#9776;</span>Lines</div>
+      <div><span class="i">&#9783;</span>History</div>
+      <div><span class="i">&#9312;</span>Totals</div>
+      <div class="here"><span class="i">&#9873;</span>Routes</div>
+    </div>
+  </div>
+
+  <p class="caption">What a sponsor buys: their brand on the route map, the schedule trappers check all season, and one-tap contact &mdash; in front of every fur seller on their route.</p>
+
+<script>
+  document.querySelectorAll('.tab').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('active'); });
+      document.querySelectorAll('.panel').forEach(function(p){ p.classList.remove('active'); });
+      btn.classList.add('active');
+      document.getElementById('p-' + btn.dataset.p).classList.add('active');
+    });
+  });
+  var detail = document.getElementById('stopDetail');
+  document.querySelectorAll('.stop-dot').forEach(function(g){
+    g.addEventListener('click', function(){
+      detail.innerHTML = '<div class="t">' + g.dataset.t + '</div>' +
+        '<div class="d">' + g.dataset.d + '<br>' + g.dataset.w + '</div>' +
+        '<div class="row"><button class="btn primary">Remind me</button>' +
+        '<button class="btn ghost">Details</button></div>';
+    });
+  });
+  document.querySelectorAll('.bell').forEach(function(b){
+    b.addEventListener('click', function(){ b.classList.toggle('on'); });
+  });
+  var alertBtn = document.getElementById('alertBtn');
+  alertBtn.addEventListener('click', function(){
+    alertBtn.classList.toggle('on');
+    alertBtn.textContent = alertBtn.classList.contains('on') ? 'Alerts on \u2713' : 'Get text alerts for this route';
+  });
+</script>
+</body>
+</html>
